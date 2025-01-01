@@ -1,0 +1,29 @@
+name: Reviewer PR based on file extensions
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18'  # 최신 LTS 버전으로 설정 (현재 LTS 버전: 18)
+
+    - name: Install dependencies
+      run: npm install @actions/core @actions/github
+
+    - name: Run custom script
+      run: node .github/scripts/reviewer-pr.js
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        REVIWER_TEAM: ${{ vars.REVIWER_TEAM }}
+        ACTOR: ${{ github.actor }}
+        

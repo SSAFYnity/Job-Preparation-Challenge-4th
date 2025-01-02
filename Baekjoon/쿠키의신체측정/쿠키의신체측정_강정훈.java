@@ -67,7 +67,6 @@ public class Main {
         for (int i = 0; i < size; i++) {
             grid[i] = br.readLine();
         }
-
         BodyShapeInspector inspector = new BodyShapeInspector(size, grid);
         System.out.println(inspector.inspectShape());
     }

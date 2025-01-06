@@ -8,18 +8,18 @@ function solution(cacheSize, cities) {
         city = city.toLowerCase();
         const index = cache.indexOf(city);
 
+        // 이미 있는 경우
         if (index !== -1) {
-            // cache hit
             cache.splice(index, 1);
             cache.push(city);
-            time += 1;
+            answer += 1;
         } else {
-            // cache miss
-            if (cache.length >= cacheSize) {
+            // 꽉찼는데 없는 경우
+            if (cache.length === cacheSize) {
                 cache.shift();
             }
             cache.push(city);
-            time += 5;
+            answer += 5;
         }
     }
 

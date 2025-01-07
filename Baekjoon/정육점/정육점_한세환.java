@@ -39,6 +39,8 @@ public class Main {
             list.add(new Meat(w,c));
         }
 
+        Collections.sort(list);
+
         int totalWeight = list.get(0).w;
         int totalPrice = list.get(0).c;
 

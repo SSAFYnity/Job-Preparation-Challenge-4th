@@ -1,10 +1,16 @@
 package SSAFYnity.no5;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
-public class Baekjoon_250108_빙산2 {
+public class Baekjoon_250108_빙산_buffer {
 
 	static class Iceberg {
 		int r;
@@ -28,38 +34,40 @@ public class Baekjoon_250108_빙산2 {
 
 	// 사방탐색 (상하좌우)
 	static int[][] delta = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
-	static int[][] sea, visited;
+	static int[][] sea, copy, visited;
 	static int N, M;
-	static Queue<Iceberg> icebergs;
-	static Queue<Iceberg> queue;
+	static Queue<Iceberg> icebergs; // 빙하 목록
+	static Queue<Iceberg> queue; // bfs용 큐
 
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		StringTokenizer st;
 
-		// N과 M은 3 이상 300 이하
-		N = sc.nextInt();
-		M = sc.nextInt();
+		st = new StringTokenizer(br.readLine());
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
 
-		// 배열의 첫 번째 행과 열, 마지막 행과 열에는 항상 0으로 채워진다.
 		sea = new int[N][M];
+		copy = new int[N][M];
 
-		// 1 이상의 정수가 들어가는 칸의 개수는 10,000 개 이하
 		icebergs = new LinkedList<>();
 
 		int h = -1;
 		for (int r = 0; r < N; r++) {
+			st = new StringTokenizer(br.readLine());
 			for (int c = 0; c < M; c++) {
-				h = sc.nextInt();
+				h = Integer.parseInt(st.nextToken());
 				if (h != 0) {
 					sea[r][c] = h;
+					copy[r][c] = h;
 					icebergs.add(new Iceberg(r, c, h));
 				}
 			}
-		}
+		} // 빙산 입력
 
-		// 빙산 덩어리 개수 카운트 BFS
+		// 빙산 덩어리 개수 카운트 bfs
 		int groupCount = countIceberg();
-		int maxGroupCount = groupCount;
 		int year = 0;
 
 		// 반복
@@ -67,30 +75,41 @@ public class Baekjoon_250108_빙산2 {
 		while (groupCount != 0 && groupCount < 2) {
 			year++;
 
-			// 사방 검색 후 높이 -1
+			// 1. dfs
+			// 사방 검색 후 빙하 높이 -1
 			melting();
 
-			// 그룹 개수 카운트
-			groupCount = countIceberg();
+			// 배열 복사
+			// 빙하 높이가 감소한 배열 값을 원본에 복사
+			for (int r = 0; r < N; r++) {
+				for (int c = 0; c < M; c++) {
+					sea[r][c] = copy[r][c];
+				}
+			}
 
-			maxGroupCount = Math.max(maxGroupCount, groupCount);
+			// 2. bfs
+			// 빙하 덩어리 개수 카운트
+			groupCount = countIceberg();
 		}
 
 		// 만일 전부 다 녹을 때까지 두 덩어리 이상으로 분리되지 않으면 프로그램은 0을 출력한다.
-		if (maxGroupCount < 2) {
+		if (groupCount < 2) {
 			System.out.println(0);
 		} else {
 
 			System.out.println(year);
 		}
-
 	}// main
 
+	// 빙산 목록에서 하나씩 꺼내서 탐색
 	private static void melting() {
 		if (!icebergs.isEmpty()) {
 			Iceberg initIce = icebergs.poll();
 			int initR = initIce.r;
 			int initC = initIce.c;
+
+			visited = new int[N][M];
+			visited[initR][initC] = 1;
 
 			dfs(initIce);
 
@@ -98,22 +117,27 @@ public class Baekjoon_250108_빙산2 {
 				if (icebergs.isEmpty()) {
 					break;
 				}
+
 				Iceberg ice = icebergs.peek();
-				if (ice.r == initR && ice.c == initC) {
+				if (visited[ice.r][ice.c] == 1) {
 					break;
 				}
+
 				ice = icebergs.poll();
+				visited[ice.r][ice.c] = 1;
 
 				dfs(ice);
 			}
 		}
-	}
+	}// ()
 
+	// 빙하 높이 감소 dfs
 	private static void dfs(Iceberg ice) {
 		int r = ice.r;
 		int c = ice.c;
 		int h = ice.height;
 
+		// 사방 탐색
 		for (int i = 0; i < 4; i++) {
 			int nr = r + delta[i][0];
 			int nc = c + delta[i][1];
@@ -121,17 +145,18 @@ public class Baekjoon_250108_빙산2 {
 			if (nr >= 0 && nr < N && nc >= 0 && nc < M) {
 				if (sea[nr][nc] <= 0) {
 					ice.height--;
-					sea[ice.r][ice.c]--;
+					copy[ice.r][ice.c]--;
 				}
 			}
 		}
 
+		// 만약 0이 아니라면, 아직 빙산이므로 빙산 목록에 다시 추가
 		if (ice.height > 0) {
 			icebergs.add(ice);
 		}
 	}
 
-	// bfs 빙산 덩어리 개수 카운트
+	// 빙산 덩어리 개수 카운트
 	private static int countIceberg() {
 		int count = 0;
 		if (!icebergs.isEmpty()) {
@@ -143,22 +168,27 @@ public class Baekjoon_250108_빙산2 {
 			visited[initR][initC] = 1;
 			queue = new LinkedList<>();
 			queue.add(initIce);
+
 			count += bfs();
+
 			icebergs.add(initIce);
 
 			while (true) {
 				Iceberg ice = icebergs.peek();
-				if (ice.r == initR && ice.c == initC) {
+				if (initR == ice.r && initC == ice.c) {
 					break;
 				}
+				// 상단 방문체크 조건문을 위해, 빙산 목록 꺼내고 넣기를 반복해야 함
 				ice = icebergs.poll();
-				visited[ice.r][ice.c] = 1;
-				queue = new LinkedList<>();
-				queue.add(ice);
-				count += bfs();
+				if (visited[ice.r][ice.c] != 1) { // 아직 그룹 카운팅이 안 된 빙산이라면
+					visited[ice.r][ice.c] = 1;
+					queue = new LinkedList<>();
+					queue.add(ice);
+
+					count += bfs();
+				}
 				icebergs.add(ice);
 			}
-
 			return count;
 		}
 		return count;
@@ -170,7 +200,9 @@ public class Baekjoon_250108_빙산2 {
 			Iceberg ice = queue.poll();
 			int r = ice.r;
 			int c = ice.c;
+			count = 1; // 단일 개체도 덩어리임
 
+			// 사방탐색
 			for (int i = 0; i < 4; i++) {
 				int nr = r + delta[i][0];
 				int nc = c + delta[i][1];
@@ -179,7 +211,6 @@ public class Baekjoon_250108_빙산2 {
 				if (nr >= 0 && nr < N && nc >= 0 && nc < M) {
 					if (sea[nr][nc] > 0 && visited[nr][nc] == 0) {
 						visited[nr][nc] = 1;
-						count = 1;
 						queue.add(new Iceberg(nr, nc));
 					}
 				}

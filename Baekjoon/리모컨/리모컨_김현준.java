@@ -43,6 +43,7 @@ public class 리모컨 {
             }
             // 기존 채널에서 움직인 것과 바뀐채널에서 움직일때 최소의 시간은?
 
+
         }
         answer = Math.min(answer, nowMove);
 

@@ -17,7 +17,7 @@ public class 리모컨_김수빈 {
         }
         int minCnt = Math.abs(N - 100);
 
-        for (int i = 0; i <= 500000; i++) {
+        for (int i = 0; i <= 999900; i++) {
             String str = String.valueOf(i);
             boolean possible = true;
             for (int j = 0; j < str.length(); j++) {

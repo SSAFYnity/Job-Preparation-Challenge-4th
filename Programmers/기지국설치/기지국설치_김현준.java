@@ -12,7 +12,7 @@ class Solution {
                 position = stations[idx] + w + 1;
                 idx++;
             }
-            // 2. 안 닿으면, 현재 위치에 기지국 설치 후  범위 밖으로 이동
+            // 2. 안 닿으면, 현재 위치에 기지국 설치 후 범위 밖으로 이동
             else {
                 answer++;
                 position += cover;

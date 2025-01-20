@@ -14,7 +14,7 @@ class Solution {
     private Set<Set<String>> getBanListSize(String[] bannedIds) {
         Set<Set<String>> banList = new HashSet<>();
         for (List<String> candidate : candidates) {
-            String[] candiArr = candidate.toArray(new String[2]);
+            String[] candiArr = candidate.toArray(new String[0]);
             if (isBanned(candiArr, bannedIds)) {
                 banList.add(new HashSet<>(candidate));
             }

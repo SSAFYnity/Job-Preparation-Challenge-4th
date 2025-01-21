@@ -26,6 +26,7 @@ class Solution {
                 }
             }
             firstSet.add(set);
+
         }
 
         System.out.println(firstSet.toString());

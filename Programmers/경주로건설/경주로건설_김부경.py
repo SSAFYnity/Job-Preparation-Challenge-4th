@@ -1,7 +1,7 @@
 import heapq
 
 def solution(board):
-    # 최소 비용 다익스트라 알고리즘    
+    # 최소 비용 다익스트라 알고리즘
     def dijkstra():
         # 최대 비용
         max_cost = 25*25*500
